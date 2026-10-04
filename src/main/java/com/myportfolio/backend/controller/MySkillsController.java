@@ -1,6 +1,7 @@
 package com.myportfolio.backend.controller;
 
 import java.util.List;
+
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.myportfolio.backend.dto.MySkillRequestDto;
 import com.myportfolio.backend.dto.MySkillsResponseDto;
+import com.myportfolio.backend.model.MySkills;
 import com.myportfolio.backend.services.MySkillServices;
 
 import jakarta.validation.Valid;
@@ -64,7 +66,11 @@ public class MySkillsController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(mySkillServices.updatePartialMySkills(id, updates));
     }
 
-
-
     
+    @GetMapping("/category/{category}")
+    public ResponseEntity<List<MySkills>> findByCategory(@PathVariable String category) {
+        return ResponseEntity.status(HttpStatus.OK).body(mySkillServices.findByCategory(category));
+    }
+    
+
 }

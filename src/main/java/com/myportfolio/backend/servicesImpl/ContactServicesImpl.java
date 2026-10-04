@@ -50,6 +50,7 @@ public class ContactServicesImpl implements ContactServices {
     public ContactResponseDto updateContact(Long id, ContactRequestDto contactRequestDto) {
         Contact contact = contactRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Contact Not found with Id : " + id));
+                
         if (contactRepository.existsByEmail(contactRequestDto.getEmail())
                 && !contact.getEmail().equals(contactRequestDto.getEmail())) {
             throw new DuplicateResourceException("Contact already exists");

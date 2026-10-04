@@ -22,4 +22,8 @@ public class CertificationsResponseDto {
 
     private String description;
     private String skills;
+
+    private Long profileId;
+    private String profileName;
+
 }

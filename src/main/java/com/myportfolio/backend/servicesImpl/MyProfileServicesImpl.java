@@ -9,6 +9,7 @@ import com.myportfolio.backend.exception.FileUploadException;
 
 import org.springframework.stereotype.Service;
 
+import com.myportfolio.backend.dto.CertificationsResponseDto;
 import com.myportfolio.backend.dto.MyProfileRequestDto;
 import com.myportfolio.backend.dto.MyProfileResponseDto;
 import com.myportfolio.backend.exception.BadRequestException;
@@ -263,5 +264,40 @@ public class MyProfileServicesImpl implements MyProfileServices {
         MyProfile saveProfile = myProfileRepository.save(myProfile);
         return modelMapper.map(saveProfile, MyProfileResponseDto.class);
     }
+
+
+
+
+    private MyProfileResponseDto mapToResponse(
+            MyProfile profile) {
+
+        MyProfileResponseDto response = modelMapper.map(
+                profile,
+                MyProfileResponseDto.class);
+
+        if (profile.getCertifications() != null) {
+
+            List<CertificationsResponseDto> certifications = profile.getCertifications()
+                    .stream()
+                    .map(certification -> {
+
+                        CertificationsResponseDto dto = modelMapper.map(
+                                certification,
+                                CertificationsResponseDto.class);
+
+                        dto.setProfileId(
+                                profile.getId());
+
+                        return dto;
+                    })
+                    .toList();
+
+            response.setCertifications(certifications);
+        }
+
+        return response;
+    }
+
+    
 
 }

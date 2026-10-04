@@ -59,6 +59,9 @@ public class CertificationsRequestDto {
         message = "Skills cannot exceed 500 characters"
     )
     private String skills;
+
+    // Profile ID
+    private Long profileId;
     
 
 }

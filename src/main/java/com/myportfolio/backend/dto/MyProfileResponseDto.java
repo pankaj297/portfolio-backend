@@ -1,5 +1,7 @@
 package com.myportfolio.backend.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,5 +27,7 @@ public class MyProfileResponseDto {
     private String portfolioUrl;
     private String leedcodeUrl;
     private boolean availableForWork;
+   
 
+    private List<CertificationsResponseDto> certifications;
 }

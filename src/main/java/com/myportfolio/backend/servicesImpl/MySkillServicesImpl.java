@@ -154,30 +154,35 @@ public class MySkillServicesImpl implements MySkillServices {
                 case "level":
                     mySkills.setLevel((String) value);
                     break;
-                
-                case "yearsOfExperience" : 
+
+                case "yearsOfExperience":
                     mySkills.setYearsOfExperience((Integer) value);
                     break;
 
                 case "displayOrder":
                     mySkills.setDisplayOrder((Integer) value);
                     break;
-                
+
                 case "isActive":
                     mySkills.setIsActive((Boolean) value);
                     break;
-               
+
                 default:
                     throw new BadRequestException("Field Is not supported" + fields);
-              }
+            }
         });
 
         MySkills saveSkills = mySkillsRepository.save(mySkills);
         return modelMapper.map(saveSkills, MySkillsResponseDto.class);
 
     }
+    
 
-     
+    //^ findByCategoryAndIsActiveTrue
+    @Override
+    public List<MySkills> findByCategory(String category) {
+        return mySkillsRepository.findByCategoryAndIsActiveTrue(category);
+    }
 
     
 }

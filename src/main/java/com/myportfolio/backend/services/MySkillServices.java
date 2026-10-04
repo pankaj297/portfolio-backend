@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.myportfolio.backend.dto.MySkillRequestDto;
 import com.myportfolio.backend.dto.MySkillsResponseDto;
+import com.myportfolio.backend.model.MySkills;
 
 public interface MySkillServices {
 
@@ -20,7 +21,9 @@ public interface MySkillServices {
     
     void deleteMySkillsById(Long id);
 
-    MySkillsResponseDto updatePartialMySkills(Long id, Map<String,Object> updates);
+    MySkillsResponseDto updatePartialMySkills(Long id, Map<String, Object> updates);
+    
+    List<MySkills> findByCategory(String category);
 
     
 }

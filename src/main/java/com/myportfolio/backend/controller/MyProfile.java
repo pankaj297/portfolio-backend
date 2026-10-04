@@ -15,8 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.myportfolio.backend.dto.MyProfileRequestDto;
 import com.myportfolio.backend.dto.MyProfileResponseDto;
+import com.myportfolio.backend.exception.ResourceNotFoundException;
+import com.myportfolio.backend.repository.MyProfileRepository;
 import com.myportfolio.backend.services.MyProfileServices;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class MyProfile {
 
     private final MyProfileServices myProfileServices;
+
 
     // ^ Get Profiles
     @GetMapping
@@ -71,5 +75,7 @@ public class MyProfile {
             @RequestBody Map<String, Object> updates) {
         return ResponseEntity.ok(myProfileServices.updatePartialMyProfile(id, updates));
     }
+
+
     
 }

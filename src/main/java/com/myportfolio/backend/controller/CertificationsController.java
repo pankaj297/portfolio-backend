@@ -17,6 +17,7 @@ import com.myportfolio.backend.dto.CertificationsRequestDto;
 import com.myportfolio.backend.dto.CertificationsResponseDto;
 import com.myportfolio.backend.services.CertificationServices;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -39,7 +40,7 @@ public class CertificationsController {
 
     @PostMapping
     public ResponseEntity<CertificationsResponseDto> createCertification(@Valid  @ModelAttribute  CertificationsRequestDto certificationsRequestDto) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(certificationServices.createCertification(
+        return ResponseEntity.status(HttpStatus.CREATED).body(certificationServices.createCertification(
                 certificationsRequestDto));
     }
 
