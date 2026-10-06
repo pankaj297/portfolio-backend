@@ -28,7 +28,7 @@ public class MyServicesController {
     
     private final MyServicesServices myServicesServices;
 
-     @GetMapping("/")
+     @GetMapping
     public ResponseEntity<List<MyServicesResponseDto>> getAllServices() {
         return ResponseEntity.status(HttpStatus.OK).body(myServicesServices.getAllServices());
     }
@@ -38,7 +38,7 @@ public class MyServicesController {
         return ResponseEntity.status(HttpStatus.OK).body(myServicesServices.getServicesById(id));
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<MyServicesResponseDto> createServices(
             @Valid @RequestBody MyServicesRequestDto myServicesRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(myServicesServices.createServices(

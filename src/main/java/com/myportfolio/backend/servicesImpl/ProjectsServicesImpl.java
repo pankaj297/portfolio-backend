@@ -7,12 +7,15 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+
 import com.myportfolio.backend.dto.ProjectsRequestDto;
 import com.myportfolio.backend.dto.ProjectsResponseDto;
 import com.myportfolio.backend.exception.BadRequestException;
 import com.myportfolio.backend.exception.FileUploadException;
 import com.myportfolio.backend.exception.ResourceNotFoundException;
+import com.myportfolio.backend.model.MyProfile;
 import com.myportfolio.backend.model.Projects;
+import com.myportfolio.backend.repository.MyProfileRepository;
 import com.myportfolio.backend.repository.ProjectsRepository;
 import com.myportfolio.backend.services.CloudinaryService;
 import com.myportfolio.backend.services.ProjectsServices;
@@ -27,6 +30,7 @@ public class ProjectsServicesImpl implements ProjectsServices {
     public final ModelMapper modelMapper;
 
     public final CloudinaryService cloudinaryService;
+     private final MyProfileRepository myProfileRepository;
 
     // ^ Get All Projects
     @Override
@@ -46,7 +50,30 @@ public class ProjectsServicesImpl implements ProjectsServices {
     // ^ Create Projects
     @Override
     public ProjectsResponseDto createProjects(ProjectsRequestDto projectsRequestDto) {
-        Projects projects = modelMapper.map(projectsRequestDto, Projects.class);
+        //! Projects projects = modelMapper.map(projectsRequestDto, Projects.class);
+
+        Projects projects = new Projects();
+
+        projects.setTitle(projectsRequestDto.getTitle());
+        projects.setShortDescription(projectsRequestDto.getShortDescription());
+        projects.setDescription(projectsRequestDto.getDescription());
+        projects.setGithubUrl(projectsRequestDto.getGithubUrl());
+        projects.setLiveUrl(projectsRequestDto.getLiveUrl());
+        projects.setStartDate(projectsRequestDto.getStartDate());
+        projects.setEndDate(projectsRequestDto.getEndDate());
+        projects.setStatus(projectsRequestDto.getStatus());
+        projects.setFeatured(projectsRequestDto.getFeatured());
+        projects.setDisplayOrder(projectsRequestDto.getDisplayOrder());
+
+           // & for Relationship code
+        // ^ find profile
+        MyProfile profile = myProfileRepository.findById(projectsRequestDto.getProfileId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ("Profile Not found with id : " + projectsRequestDto.getProfileId())));
+
+        // ^ set profile
+        projects.setProfile(profile);
+        // & end Relationship code
         
         try{
             if(projectsRequestDto.getThumbnailImg() != null && !projectsRequestDto.getThumbnailImg().isEmpty()){
@@ -71,7 +98,7 @@ public class ProjectsServicesImpl implements ProjectsServices {
                 .orElseThrow(() -> new ResourceNotFoundException("Project not found with id : " + id));
 
 
-        // modelMapper.map(projectsRequestDto, projects);
+        //! modelMapper.map(projectsRequestDto, projects);
         projects.setTitle(projectsRequestDto.getTitle());
         projects.setShortDescription(projectsRequestDto.getShortDescription());
         projects.setDescription(projectsRequestDto.getDescription());
@@ -82,6 +109,17 @@ public class ProjectsServicesImpl implements ProjectsServices {
         projects.setStatus(projectsRequestDto.getStatus());
         projects.setFeatured(projectsRequestDto.getFeatured());
         projects.setDisplayOrder(projectsRequestDto.getDisplayOrder());
+
+        // ? relationship code projects and profile
+        // check is id is present or not and find profile
+        if (projectsRequestDto.getProfileId() != null) {
+            MyProfile profile = myProfileRepository.findById(projectsRequestDto.getProfileId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Profile not found with id : " + projectsRequestDto.getProfileId()));
+            // set profile
+            projects.setProfile(profile);
+        }
+        // ? relationship code projects and profile
 
         if (projectsRequestDto.getThumbnailImg() != null && !projectsRequestDto.getThumbnailImg().isEmpty()) {
             
@@ -177,5 +215,20 @@ public class ProjectsServicesImpl implements ProjectsServices {
         Projects saveProjects = projectsRepository.save(projects);
         return modelMapper.map(saveProjects, ProjectsResponseDto.class);
     }
+
+
+       // ^ relation ship code my projects and profile
+       private ProjectsResponseDto mapToResponse(Projects projects) {
+
+           ProjectsResponseDto response = modelMapper.map(projects, ProjectsResponseDto.class);
+
+           if (projects.getProfile() != null) {
+               response.setProfileId(projects.getProfile().getId());
+               response.setProfileName(projects.getProfile().getFullName());
+           }
+           return response;
+       }
+    
+
 
 }

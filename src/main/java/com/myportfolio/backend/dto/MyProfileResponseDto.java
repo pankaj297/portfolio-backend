@@ -30,4 +30,21 @@ public class MyProfileResponseDto {
    
 
     private List<CertificationsResponseDto> certifications;
+
+    private List<EducationResponseDto> education;
+
+    private List<MySkillsResponseDto> skills;
+
+    private List<MyServicesResponseDto> services;
+
+    private List<ExperienceResponseDto> experience;
+
+    private List<ProjectsResponseDto> projects;
+
+    private List<AchievementsResponseDto> achievements;
+
+    private List<BlogResponseDto> blog;
+
+    private List<ResumeResponseDto> resumes;
+
 }

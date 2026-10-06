@@ -15,5 +15,8 @@ public class MyServicesResponseDto {
 
     private Integer displayOrder;
     private Boolean isActive;
+
+    private Long profileId;
+    private String profileName;
     
 }

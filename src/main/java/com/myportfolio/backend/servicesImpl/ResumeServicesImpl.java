@@ -8,11 +8,14 @@ import java.util.Map;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+
 import com.myportfolio.backend.dto.ResumeRequestDto;
 import com.myportfolio.backend.dto.ResumeResponseDto;
 import com.myportfolio.backend.exception.FileUploadException;
 import com.myportfolio.backend.exception.ResourceNotFoundException;
+import com.myportfolio.backend.model.MyProfile;
 import com.myportfolio.backend.model.Resume;
+import com.myportfolio.backend.repository.MyProfileRepository;
 import com.myportfolio.backend.repository.ResumeRepository;
 import com.myportfolio.backend.services.CloudinaryService;
 import com.myportfolio.backend.services.ResumeServices;
@@ -25,7 +28,8 @@ public class ResumeServicesImpl implements ResumeServices {
 
     private final ResumeRepository resumeRepository;
     private final ModelMapper modelMapper;
-        private final CloudinaryService cloudinaryService;
+    private final CloudinaryService cloudinaryService;
+    private final MyProfileRepository myProfileRepository;
 
     @Override
     public List<ResumeResponseDto> getAllResumes() {
@@ -44,7 +48,23 @@ public class ResumeServicesImpl implements ResumeServices {
     //^ Create Resume
     @Override
     public ResumeResponseDto createResume(ResumeRequestDto resumeRequestDto) {
-        Resume resume = modelMapper.map(resumeRequestDto, Resume.class);
+        //! Resume resume = modelMapper.map(resumeRequestDto, Resume.class);
+
+        Resume resume = new Resume();
+
+        resume.setTitle(resumeRequestDto.getTitle());
+        resume.setVersion(resumeRequestDto.getVersion());
+        resume.setIsPrimary(resumeRequestDto.getIsPrimary());
+
+        // & for Relationship code
+        // ^ find profile
+        MyProfile profile = myProfileRepository.findById(resumeRequestDto.getProfileId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ("Profile Not found with id : " + resumeRequestDto.getProfileId())));
+
+        // ^ set profile
+        resume.setProfile(profile);
+        // & end Relationship code
 
         try {
             if (resumeRequestDto.getResumeFileUrl() != null && !resumeRequestDto.getResumeFileUrl().isEmpty()) {
@@ -68,11 +88,22 @@ public class ResumeServicesImpl implements ResumeServices {
         Resume resume = resumeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume id not found with id : " + id));
 
-        // modelMapper.map(resumeRequestDto, resume);
+        //! modelMapper.map(resumeRequestDto, resume);
 
         resume.setTitle(resumeRequestDto.getTitle());
         resume.setVersion(resumeRequestDto.getVersion());
         resume.setIsPrimary(resumeRequestDto.getIsPrimary());
+
+        // ? relationship code resume and profile
+        // check is id is present or not and find profile
+        if (resumeRequestDto.getProfileId() != null) {
+            MyProfile profile = myProfileRepository.findById(resumeRequestDto.getProfileId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Profile not found with id : " + resumeRequestDto.getProfileId()));
+            // set profile
+            resume.setProfile(profile);
+        }
+        // ? relationship code resume and profile
 
         if (resumeRequestDto.getResumeFileUrl() != null && !resumeRequestDto.getResumeFileUrl().isEmpty()) {
 
@@ -113,6 +144,18 @@ public class ResumeServicesImpl implements ResumeServices {
 
         //  Database se resume delete
         resumeRepository.delete(resume);
+    }
+
+       // ^ relation ship code my resume and profile
+    private ResumeResponseDto mapToResponse(Resume resume) {
+
+        ResumeResponseDto response = modelMapper.map(resume, ResumeResponseDto.class);
+
+        if (resume.getProfile() != null) {
+            response.setProfileId(resume.getProfile().getId());
+            response.setProfileName(resume.getProfile().getFullName());
+        }
+        return response;
     }
 
 }

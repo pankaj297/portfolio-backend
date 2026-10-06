@@ -6,7 +6,6 @@ import java.util.List;
 import com.myportfolio.backend.dto.CertificationsRequestDto;
 import com.myportfolio.backend.dto.CertificationsResponseDto;
 
-import jakarta.servlet.http.HttpSession ;
 
 
 public interface CertificationServices {

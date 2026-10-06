@@ -12,7 +12,9 @@ import com.myportfolio.backend.dto.MySkillsResponseDto;
 import com.myportfolio.backend.exception.BadRequestException;
 import com.myportfolio.backend.exception.FileUploadException;
 import com.myportfolio.backend.exception.ResourceNotFoundException;
+import com.myportfolio.backend.model.MyProfile;
 import com.myportfolio.backend.model.MySkills;
+import com.myportfolio.backend.repository.MyProfileRepository;
 import com.myportfolio.backend.repository.MySkillsRepository;
 import com.myportfolio.backend.services.CloudinaryService;
 import com.myportfolio.backend.services.MySkillServices;
@@ -28,6 +30,7 @@ public class MySkillServicesImpl implements MySkillServices {
     private final ModelMapper modelMapper;
 
     private final CloudinaryService cloudinaryService;
+    private final MyProfileRepository myProfileRepository;
 
     // ^ Get Profiles
     @Override
@@ -49,7 +52,32 @@ public class MySkillServicesImpl implements MySkillServices {
     // ^ Create Profile
     @Override
     public MySkillsResponseDto createMySkills(MySkillRequestDto mySkillRequestDto) {
-        MySkills mySkills = modelMapper.map(mySkillRequestDto, MySkills.class);
+        //! MySkills mySkills = modelMapper.map(mySkillRequestDto, MySkills.class);
+        //Object create
+        MySkills mySkills = new MySkills();
+
+        // private String skill;
+        mySkills.setSkill(mySkillRequestDto.getSkill());
+        // private String category;
+        mySkills.setCategory(mySkillRequestDto.getCategory());
+        // private String level;
+        mySkills.setLevel(mySkillRequestDto.getLevel());
+        // private Integer yearsOfExperience;
+        mySkills.setYearsOfExperience(mySkillRequestDto.getYearsOfExperience());
+        // private Integer displayOrder;
+        mySkills.setDisplayOrder(mySkillRequestDto.getDisplayOrder());
+        // private Boolean isActive;
+        mySkills.setIsActive(mySkillRequestDto.getIsActive());
+
+        // & for Relationship code
+        //^ find profile
+        MyProfile profile = myProfileRepository.findById(mySkillRequestDto.getProfileId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ("Profile Not found with id : " + mySkillRequestDto.getProfileId())));
+
+        //^ set profile
+        mySkills.setProfile(profile);
+        // & end Relationship code
 
         try {
             //& Upload profile image
@@ -66,15 +94,15 @@ public class MySkillServicesImpl implements MySkillServices {
         }
         MySkills saveSkills = mySkillsRepository.save(mySkills);
         return modelMapper.map(saveSkills, MySkillsResponseDto.class);
-
     }
+    
 
     // ^ Update Profile
     @Override
     public MySkillsResponseDto updateMySkills(Long id, MySkillRequestDto mySkillRequestDto) {
         MySkills mySkills = mySkillsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Skill are not found with id : " + id));
-        // modelMapper.map(mySkillRequestDto, mySkills);
+        //! modelMapper.map(mySkillRequestDto, mySkills);
     
         // Update only normal fields
         mySkills.setSkill(mySkillRequestDto.getSkill());
@@ -83,6 +111,18 @@ public class MySkillServicesImpl implements MySkillServices {
         mySkills.setYearsOfExperience(mySkillRequestDto.getYearsOfExperience());
         mySkills.setDisplayOrder(mySkillRequestDto.getDisplayOrder());
         mySkills.setIsActive(mySkillRequestDto.getIsActive());
+
+        // ? relationship code skills and profile
+        // check is id is present or not and  find profile
+        if (mySkillRequestDto.getProfileId() != null) {
+            MyProfile profile = myProfileRepository.findById(mySkillRequestDto.getProfileId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Profile not found with id : " + mySkillRequestDto.getProfileId()));
+            //set profile
+            mySkills.setProfile(profile);
+        }
+         // ? relationship code skills and profile
+
 
           // & Upload profile image // 2. Update image ONLY if new image exists
             if (mySkillRequestDto.getIconImg() != null
@@ -182,6 +222,19 @@ public class MySkillServicesImpl implements MySkillServices {
     @Override
     public List<MySkills> findByCategory(String category) {
         return mySkillsRepository.findByCategoryAndIsActiveTrue(category);
+    }
+
+
+    //^ relation ship code skills and profile
+    private MySkillsResponseDto mapToResponse(MySkills mySkills) {
+        
+        MySkillsResponseDto response = modelMapper.map(mySkills, MySkillsResponseDto.class);
+
+        if (mySkills.getProfile() != null) {
+            response.setProfileId(mySkills.getProfile().getId());
+            response.setProfileName(mySkills.getProfile().getFullName());
+        }
+        return response;
     }
 
     

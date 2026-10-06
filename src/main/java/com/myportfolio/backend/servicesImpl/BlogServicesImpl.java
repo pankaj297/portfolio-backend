@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service;
 
 import com.myportfolio.backend.dto.BlogRequestDto;
 import com.myportfolio.backend.dto.BlogResponseDto;
+
 import com.myportfolio.backend.exception.FileUploadException;
 import com.myportfolio.backend.exception.ResourceNotFoundException;
 import com.myportfolio.backend.model.Blog;
+import com.myportfolio.backend.model.MyProfile;
+
 import com.myportfolio.backend.repository.BlogRepository;
+import com.myportfolio.backend.repository.MyProfileRepository;
 import com.myportfolio.backend.services.BlogServices;
 import com.myportfolio.backend.services.CloudinaryService;
 
@@ -26,6 +30,7 @@ public class BlogServicesImpl implements BlogServices {
     private final BlogRepository blogRepository;
     private final ModelMapper modelMapper;
     private final CloudinaryService cloudinaryService;
+    private final MyProfileRepository myProfileRepository;
 
     @Override
     public List<BlogResponseDto> getAllBlogs() {
@@ -42,11 +47,34 @@ public class BlogServicesImpl implements BlogServices {
 
     @Override
     public BlogResponseDto createBlog(BlogRequestDto blogRequestDto) {
-        Blog blog = modelMapper.map(blogRequestDto, Blog.class);
+        //! Blog blog = modelMapper.map(blogRequestDto, Blog.class);
+
+        Blog blog = new Blog();
+
+        blog.setTitle(blogRequestDto.getTitle());
+        blog.setSlug(blogRequestDto.getSlug());
+        blog.setExcerpt(blogRequestDto.getExcerpt());
+        blog.setContent(blogRequestDto.getContent());
+        blog.setCategory(blogRequestDto.getCategory());
+        blog.setPublished(blogRequestDto.getPublished());
+
+        // & for Relationship code
+        // ^ find profile
+        MyProfile profile = myProfileRepository.findById(blogRequestDto.getProfileId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ("Profile Not found with id : " + blogRequestDto.getProfileId())));
+
+        // ^ set profile
+        blog.setProfile(profile);
+        // & end Relationship code
 
         if (Boolean.TRUE.equals(blog.getPublished())) {
             blog.setPublishedAt(LocalDateTime.now());
         }
+
+      
+
+     
 
         try {
             if (blogRequestDto.getImgThumbnail() != null
@@ -81,6 +109,17 @@ public class BlogServicesImpl implements BlogServices {
         blog.setContent(blogRequestDto.getContent());
         blog.setCategory(blogRequestDto.getCategory());
         blog.setPublished(blogRequestDto.getPublished());
+
+        // ? relationship code blog and profile
+        // check is id is present or not and find profile
+        if (blogRequestDto.getProfileId() != null) {
+            MyProfile profile = myProfileRepository.findById(blogRequestDto.getProfileId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Profile not found with id : " + blogRequestDto.getProfileId()));
+            // set profile
+            blog.setProfile(profile);
+        }
+        // ? relationship code blog and profile
 
         try {
             if (blogRequestDto.getImgThumbnail() != null
@@ -118,5 +157,20 @@ public class BlogServicesImpl implements BlogServices {
         }
         blogRepository.delete(blog);
     }
+
+
+     // ^ relation ship code my Blog and profile
+     private BlogResponseDto mapToResponse(Blog blog) {
+
+         BlogResponseDto response = modelMapper.map(blog, BlogResponseDto.class);
+
+         if (blog.getProfile() != null) {
+             response.setProfileId(blog.getProfile().getId());
+             response.setProfileName(blog.getProfile().getFullName());
+         }
+         return response;
+     }
+    
+
 
 }

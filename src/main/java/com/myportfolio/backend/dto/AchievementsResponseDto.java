@@ -20,4 +20,7 @@ public class AchievementsResponseDto {
 
     private Integer displayOrder;
 
+    private Long profileId;
+    private String profileName;
+
 }

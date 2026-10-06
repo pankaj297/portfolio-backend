@@ -37,5 +37,8 @@ public class BlogRequestDto {
     @NotNull(message = "Published status is required")
     private Boolean published;
 
+    private Long profileId;
+    
+
     
 }

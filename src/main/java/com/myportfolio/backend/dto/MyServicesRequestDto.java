@@ -24,5 +24,9 @@ public class MyServicesRequestDto {
 
     @NotNull(message = "Active status is required")
     private Boolean isActive;
+
+    @NotNull(message = "Profile ID is required")
+    private Long profileId;
+
     
 }

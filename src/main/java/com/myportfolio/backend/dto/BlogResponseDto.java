@@ -24,5 +24,8 @@ public class BlogResponseDto {
     private String category;
     private Boolean published;
     private LocalDateTime publishedAt;
+
+    private Long profileId;
+    private String profileName;
     
 }

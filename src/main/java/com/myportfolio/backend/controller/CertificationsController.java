@@ -17,7 +17,6 @@ import com.myportfolio.backend.dto.CertificationsRequestDto;
 import com.myportfolio.backend.dto.CertificationsResponseDto;
 import com.myportfolio.backend.services.CertificationServices;
 
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

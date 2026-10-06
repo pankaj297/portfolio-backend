@@ -24,4 +24,9 @@ public class ExperienceResponseDto {
     private String companyUrl;
     private String description;
     private Integer displayOrder;
+
+
+    private Long profileId;
+    private String profileName;
+
 }

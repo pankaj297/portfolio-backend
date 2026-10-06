@@ -9,9 +9,17 @@ import com.myportfolio.backend.exception.FileUploadException;
 
 import org.springframework.stereotype.Service;
 
+import com.myportfolio.backend.dto.AchievementsResponseDto;
+import com.myportfolio.backend.dto.BlogResponseDto;
 import com.myportfolio.backend.dto.CertificationsResponseDto;
+import com.myportfolio.backend.dto.EducationResponseDto;
+import com.myportfolio.backend.dto.ExperienceResponseDto;
 import com.myportfolio.backend.dto.MyProfileRequestDto;
 import com.myportfolio.backend.dto.MyProfileResponseDto;
+import com.myportfolio.backend.dto.MyServicesResponseDto;
+import com.myportfolio.backend.dto.MySkillsResponseDto;
+import com.myportfolio.backend.dto.ProjectsResponseDto;
+import com.myportfolio.backend.dto.ResumeResponseDto;
 import com.myportfolio.backend.exception.BadRequestException;
 import com.myportfolio.backend.exception.DuplicateResourceException;
 import com.myportfolio.backend.exception.ResourceNotFoundException;
@@ -56,17 +64,17 @@ public class MyProfileServicesImpl implements MyProfileServices {
         MyProfile myProfile = modelMapper.map(myProfileRequestDto, MyProfile.class);
 
         try {
-            //& Upload profile image
+            // & Upload profile image
             if (myProfileRequestDto.getProfileImg() != null
                     && !myProfileRequestDto.getProfileImg().isEmpty()) {
                 Map<String, Object> result = cloudinaryService.uploadFile(
-                        myProfileRequestDto.getProfileImg(),  "image");
+                        myProfileRequestDto.getProfileImg(), "image");
                 myProfile.setProfileImg((String) result.get("secure_url"));
                 // Cloudinary Public ID
                 myProfile.setProfileImgPublicId((String) result.get("public_id"));
             }
 
-            //& Upload resume
+            // & Upload resume
             if (myProfileRequestDto.getResume() != null
                     && !myProfileRequestDto.getResume().isEmpty()) {
                 Map<String, Object> result = cloudinaryService.uploadFile(
@@ -75,7 +83,7 @@ public class MyProfileServicesImpl implements MyProfileServices {
                 // Cloudinary Public ID
                 myProfile.setResumePublicId((String) result.get("public_id"));
             }
-            
+
         } catch (IOException e) {
             throw new FileUploadException("File upload failed: " + e.getMessage());
         }
@@ -99,75 +107,69 @@ public class MyProfileServicesImpl implements MyProfileServices {
         // update profile
         // modelMapper.map(myProfileRequestDto, myProfile);
 
-       myProfile.setFullName(myProfileRequestDto.getFullName());
-       myProfile.setHeadline(myProfileRequestDto.getHeadline());
-       myProfile.setBio(myProfileRequestDto.getBio());
-       myProfile.setLocation(myProfileRequestDto.getLocation());
-       myProfile.setEmail(myProfileRequestDto.getEmail());
-       myProfile.setPhone(myProfileRequestDto.getPhone());
-       myProfile.setGithubUrl(myProfileRequestDto.getGithubUrl());
-       myProfile.setLinkedinUrl(myProfileRequestDto.getLinkedinUrl());
-       myProfile.setLeedcodeUrl(myProfileRequestDto.getLeedcodeUrl());
-       myProfile.setAvailableForWork(myProfileRequestDto.isAvailableForWork());
-       
-       
-            //& Update image ONLY if new image exists
-           
+        myProfile.setFullName(myProfileRequestDto.getFullName());
+        myProfile.setHeadline(myProfileRequestDto.getHeadline());
+        myProfile.setBio(myProfileRequestDto.getBio());
+        myProfile.setLocation(myProfileRequestDto.getLocation());
+        myProfile.setEmail(myProfileRequestDto.getEmail());
+        myProfile.setPhone(myProfileRequestDto.getPhone());
+        myProfile.setGithubUrl(myProfileRequestDto.getGithubUrl());
+        myProfile.setLinkedinUrl(myProfileRequestDto.getLinkedinUrl());
+        myProfile.setLeedcodeUrl(myProfileRequestDto.getLeedcodeUrl());
+        myProfile.setAvailableForWork(myProfileRequestDto.isAvailableForWork());
 
-            try {
-                    
-                 if (myProfileRequestDto.getProfileImg() != null
-                         && !myProfileRequestDto.getProfileImg().isEmpty()) {
+        // & Update image ONLY if new image exists
 
-                     // Delete old image
-                     if (myProfile.getProfileImgPublicId() != null
-                             && !myProfile.getProfileImgPublicId().isBlank()) {
-                         cloudinaryService.deleteFile(myProfile.getProfileImgPublicId(), "image");
-                     }
+        try {
 
-                     // Upload new image
-                     Map<String, Object> result = cloudinaryService.uploadFile(
-                             myProfileRequestDto.getProfileImg(), "image");
-                     // Set NEW image URL
-                     myProfile.setProfileImg((String) result.get("secure_url"));
-                     // Set NEW public ID
-                     myProfile.setProfileImgPublicId((String) result.get("public_id"));
-                 }
+            if (myProfileRequestDto.getProfileImg() != null
+                    && !myProfileRequestDto.getProfileImg().isEmpty()) {
 
-                    // & Update Resume ONLY if new resume is provided
-                    if (myProfileRequestDto.getResume() != null
-                            && !myProfileRequestDto.getResume().isEmpty()) {
-
-                                // Delete old resume
-                        if (myProfile.getResumePublicId() != null
-                                && !myProfile.getResumePublicId().isBlank()) {
-
-                            cloudinaryService.deleteFile(
-                                    myProfile.getResumePublicId(),
-                                    "raw");
-                        }
-                        // Upload new resume
-                        Map<String, Object> result = cloudinaryService.uploadFile(
-                                myProfileRequestDto.getResume(), "raw");
-                        // Set new resume URL
-                        myProfile.setResumeUrl((String) result.get("secure_url"));
-                        // Set new public ID
-                        myProfile.setResumePublicId((String) result.get("public_id"));
-                    }
-
-                } catch (IOException e) {
-                    throw new FileUploadException(
-                            "File upload failed: " + e.getMessage(), e);
+                // Delete old image
+                if (myProfile.getProfileImgPublicId() != null
+                        && !myProfile.getProfileImgPublicId().isBlank()) {
+                    cloudinaryService.deleteFile(myProfile.getProfileImgPublicId(), "image");
                 }
-            
+
+                // Upload new image
+                Map<String, Object> result = cloudinaryService.uploadFile(
+                        myProfileRequestDto.getProfileImg(), "image");
+                // Set NEW image URL
+                myProfile.setProfileImg((String) result.get("secure_url"));
+                // Set NEW public ID
+                myProfile.setProfileImgPublicId((String) result.get("public_id"));
+            }
+
+            // & Update Resume ONLY if new resume is provided
+            if (myProfileRequestDto.getResume() != null
+                    && !myProfileRequestDto.getResume().isEmpty()) {
+
+                // Delete old resume
+                if (myProfile.getResumePublicId() != null
+                        && !myProfile.getResumePublicId().isBlank()) {
+
+                    cloudinaryService.deleteFile(
+                            myProfile.getResumePublicId(),
+                            "raw");
+                }
+                // Upload new resume
+                Map<String, Object> result = cloudinaryService.uploadFile(
+                        myProfileRequestDto.getResume(), "raw");
+                // Set new resume URL
+                myProfile.setResumeUrl((String) result.get("secure_url"));
+                // Set new public ID
+                myProfile.setResumePublicId((String) result.get("public_id"));
+            }
+
+        } catch (IOException e) {
+            throw new FileUploadException(
+                    "File upload failed: " + e.getMessage(), e);
+        }
 
         // save profile
         MyProfile saveProfile = myProfileRepository.save(myProfile);
         return modelMapper.map(saveProfile, MyProfileResponseDto.class);
     }
-
-    
-
 
     // ^ Delete Profile
     @Override
@@ -175,27 +177,22 @@ public class MyProfileServicesImpl implements MyProfileServices {
         MyProfile myProfile = myProfileRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Profile are not found with id : " + id));
 
-    try{
-        if (myProfile.getProfileImgPublicId() != null && !myProfile.getProfileImgPublicId().isBlank()) {
-            cloudinaryService.deleteFile(myProfile.getProfileImgPublicId(), "image");
+        try {
+            if (myProfile.getProfileImgPublicId() != null && !myProfile.getProfileImgPublicId().isBlank()) {
+                cloudinaryService.deleteFile(myProfile.getProfileImgPublicId(), "image");
+            }
+            if (myProfile.getResumePublicId() != null && !myProfile.getResumePublicId().isBlank()) {
+                cloudinaryService.deleteFile(myProfile.getResumePublicId(), "raw");
+            }
+        } catch (IOException e) {
+            throw new FileUploadException("Failed to delete skill image from Cloudinary: "
+                    + e.getMessage(), e);
         }
-        if (myProfile.getResumePublicId() != null && !myProfile.getResumePublicId().isBlank()) {
-            cloudinaryService.deleteFile(myProfile.getResumePublicId(), "raw");
-        }
-    } catch (IOException e) {
-        throw new FileUploadException("Failed to delete skill image from Cloudinary: "
-                + e.getMessage(), e);
+
+        // 3. Database se skill delete karo
+        myProfileRepository.delete(myProfile);
+
     }
-
-    // 3. Database se skill delete karo
-    myProfileRepository.delete(myProfile);
-    
-}
-
-
-
-
-
 
     // ^ Patch Update profile
     @Override
@@ -265,36 +262,103 @@ public class MyProfileServicesImpl implements MyProfileServices {
         return modelMapper.map(saveProfile, MyProfileResponseDto.class);
     }
 
+    // ~ relationship with certification and profile
+    private MyProfileResponseDto mapToResponse(MyProfile profile) {
+        MyProfileResponseDto response = modelMapper.map(profile, MyProfileResponseDto.class);
 
-
-
-    private MyProfileResponseDto mapToResponse(
-            MyProfile profile) {
-
-        MyProfileResponseDto response = modelMapper.map(
-                profile,
-                MyProfileResponseDto.class);
-
+        // * Map Profile Certifications to Response DTOs
         if (profile.getCertifications() != null) {
+            List<CertificationsResponseDto> certifications = profile.getCertifications().stream().map(certification -> {
+                CertificationsResponseDto dto = modelMapper.map(certification, CertificationsResponseDto.class);
 
-            List<CertificationsResponseDto> certifications = profile.getCertifications()
-                    .stream()
-                    .map(certification -> {
-
-                        CertificationsResponseDto dto = modelMapper.map(
-                                certification,
-                                CertificationsResponseDto.class);
-
-                        dto.setProfileId(
-                                profile.getId());
-
-                        return dto;
-                    })
-                    .toList();
-
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
             response.setCertifications(certifications);
         }
 
+        // * Map Profile Education to Response DTOs
+        if (profile.getEducation() != null) {
+            List<EducationResponseDto> education = profile.getEducation().stream().map(ed -> {
+                EducationResponseDto dto = modelMapper.map(ed, EducationResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setEducation(education);
+        }
+
+        // * Map Profile Skills to Response DTOs
+        if (profile.getSkills() != null) {
+            List<MySkillsResponseDto> skills = profile.getSkills().stream().map(sk -> {
+                MySkillsResponseDto dto = modelMapper.map(sk, MySkillsResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setSkills(skills);
+        }
+
+        // * Map Profile Services to Response DTOs
+        if (profile.getServices() != null) {
+            List<MyServicesResponseDto> services = profile.getServices().stream().map(se -> {
+                MyServicesResponseDto dto = modelMapper.map(se, MyServicesResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setServices(services);
+        }
+
+        // * Map Profile Experience to Response DTOs
+        if (profile.getExperience() != null) {
+            List<ExperienceResponseDto> experience = profile.getExperience().stream().map(ex -> {
+                ExperienceResponseDto dto = modelMapper.map(ex, ExperienceResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setExperience(experience);
+        }
+
+
+        // * Map Profile Projects to Response DTOs
+        if (profile.getProjects() != null) {
+            List<ProjectsResponseDto> projects = profile.getProjects().stream().map(pro -> {
+                ProjectsResponseDto dto = modelMapper.map(pro, ProjectsResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setProjects(projects);
+        }
+
+
+        // * Map Profile Achievements to Response DTOs
+        if (profile.getAchievements() != null) {
+            List<AchievementsResponseDto> achievements = profile.getAchievements().stream().map(achiv -> {
+                AchievementsResponseDto dto = modelMapper.map(achiv, AchievementsResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setAchievements(achievements);
+        }
+
+        // * Map Profile Blog to Response DTOs
+        if (profile.getBlog() != null) {
+            List<BlogResponseDto> blog = profile.getBlog().stream().map(blo -> {
+                BlogResponseDto dto = modelMapper.map(blo, BlogResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setBlog(blog);
+        }
+
+        // * Map Profile Blog to Resume DTOs
+        if (profile.getResumes() != null) {
+            List<ResumeResponseDto> resume = profile.getResumes().stream().map(res -> {
+                ResumeResponseDto dto = modelMapper.map(res, ResumeResponseDto.class);
+                dto.setProfileId(profile.getId());
+                return dto;
+            }).toList();
+            response.setResumes(resume);
+        }
+        
         return response;
     }
 

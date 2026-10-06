@@ -48,5 +48,7 @@ public class ProjectsRequestDto {
     @PositiveOrZero(message = "Display order can not be negative")
     private Integer displayOrder;
 
+    private Long profileId;
+
 
 }

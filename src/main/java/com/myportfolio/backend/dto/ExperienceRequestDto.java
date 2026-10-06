@@ -56,4 +56,6 @@ public class ExperienceRequestDto {
     @Max(value = 1000, message = "Display order cannot exceed 1000")
     private Integer displayOrder;
 
+    private Long profileId;
+
 }

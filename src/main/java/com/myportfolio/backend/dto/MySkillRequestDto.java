@@ -39,5 +39,6 @@ public class MySkillRequestDto {
     @NotNull(message = "Active status is required")
     private Boolean isActive;
 
-     
+    private Long profileId;
+
 }

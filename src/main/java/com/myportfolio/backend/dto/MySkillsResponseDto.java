@@ -22,4 +22,7 @@ public class MySkillsResponseDto {
     private Integer displayOrder;
     private Boolean isActive;
 
+    private Long profileId;
+    private String profileName;
+
 }

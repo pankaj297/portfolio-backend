@@ -22,5 +22,8 @@ public class ResumeRequestDto {
 
     @NotNull(message = "Primary status is required")
     private Boolean isPrimary;
+
+    private Long profileId;
+    
     
 }

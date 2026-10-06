@@ -25,4 +25,8 @@ public class EducationResponseDto {
 
     private String institutionUrl;
 
+
+    private Long profileId;
+    private String profileName;
+
 }

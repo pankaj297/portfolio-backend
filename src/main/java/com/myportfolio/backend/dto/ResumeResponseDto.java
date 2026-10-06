@@ -26,4 +26,7 @@ public class ResumeResponseDto {
     private Boolean isPrimary;
     private LocalDateTime uploadedAt;
 
+    private Long profileId;
+    private String profileName;
+
 }

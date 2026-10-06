@@ -25,4 +25,7 @@ public class ProjectsResponseDto {
     private Boolean featured;
     private Integer displayOrder;
 
+    private Long profileId;
+    private String profileName;
+
 }

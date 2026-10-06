@@ -18,27 +18,29 @@ import com.myportfolio.backend.repository.MyProfileRepository;
 import com.myportfolio.backend.services.CertificationServices;
 import com.myportfolio.backend.services.CloudinaryService;
 
-
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class CertificationServicesImpl implements CertificationServices {
-    
+
     private final CertificationsRepository certificationsRepository;
     private final ModelMapper modelMapper;
     private final CloudinaryService cloudinaryService;
     private final MyProfileRepository myProfileRepository;
 
+    // * */ Certification GetAll
     @Override
     public List<CertificationsResponseDto> getAllCertification() {
         List<Certifications> certifications = certificationsRepository.findAll();
-        // return certifications.stream().map(ce -> modelMapper.map(ce, CertificationsResponseDto.class)).toList();
+        // return certifications.stream().map(ce -> modelMapper.map(ce,
+        // CertificationsResponseDto.class)).toList();
         return certifications.stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
+    //*  */ Certification get by id
     @Override
     public CertificationsResponseDto getCertificationById(Long id) {
         Certifications certifications = certificationsRepository.findById(id)
@@ -47,11 +49,10 @@ public class CertificationServicesImpl implements CertificationServices {
         return mapToResponse(certifications);
     }
 
-    // ^ Create Certification
+    // * Create Certification
     @Override
     public CertificationsResponseDto createCertification(CertificationsRequestDto certificationsRequestDto) {
-        // Certifications certifications = modelMapper.map(certificationsRequestDto, Certifications.class);
-
+        //! Certifications certifications = modelMapper.map(certificationsRequestDto, Certifications.class);
         // Create NEW entity manually
         // ID will remain null, so database will generate new ID
         Certifications certifications = new Certifications();
@@ -64,14 +65,15 @@ public class CertificationServicesImpl implements CertificationServices {
         certifications.setDescription(certificationsRequestDto.getDescription());
         certifications.setSkills(certificationsRequestDto.getSkills());
 
-        //* */ for Relationship code
+        // & for Relationship code
         // Find Profile
-        MyProfile profile = myProfileRepository.findById( certificationsRequestDto.getProfileId()).orElseThrow(() -> new ResourceNotFoundException(
-                "Profile not found with id : " + certificationsRequestDto.getProfileId()));
-                                
-            // Set Profile
-            certifications.setProfile(profile);
-            // * */  End Relationship code
+        MyProfile profile = myProfileRepository.findById(certificationsRequestDto.getProfileId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Profile not found with id : " + certificationsRequestDto.getProfileId()));
+
+        // Set Profile
+        certifications.setProfile(profile);
+        // & End Relationship code
 
         try {
             if (certificationsRequestDto.getCertificateImage() != null
@@ -86,23 +88,16 @@ public class CertificationServicesImpl implements CertificationServices {
             throw new FileUploadException("Failed to upload certificate Image", e);
         }
         Certifications saveCertifications = certificationsRepository.save(certifications);
-        // return modelMapper.map(saveCertifications, CertificationsResponseDto.class);
-        return mapToResponse(saveCertifications);
+        return modelMapper.map(saveCertifications, CertificationsResponseDto.class);
+        // return mapToResponse(saveCertifications);
     }
 
-
-
-
-
-
-
-
-    //^ Update Certification
+    // * Update Certification
     @Override
     public CertificationsResponseDto updateCertification(Long id, CertificationsRequestDto certificationsRequestDto) {
         Certifications certifications = certificationsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Certifications id not found with id : " + id));
-        // modelMapper.map(certificationsRequestDto, certifications);
+        //! modelMapper.map(certificationsRequestDto, certifications);
 
         certifications.setName(certificationsRequestDto.getName());
         certifications.setOrganization(certificationsRequestDto.getOrganization());
@@ -112,15 +107,15 @@ public class CertificationServicesImpl implements CertificationServices {
         certifications.setDescription(certificationsRequestDto.getDescription());
         certifications.setSkills(certificationsRequestDto.getSkills());
 
-        // Update Profile
+        // ? relationship code certification and profile
         if (certificationsRequestDto.getProfileId() != null) {
 
             MyProfile profile = myProfileRepository.findById(certificationsRequestDto.getProfileId()).orElseThrow(
-                    () -> new ResourceNotFoundException("Profile not found with id : "
-                            + certificationsRequestDto.getProfileId()));
-
+                    () -> new ResourceNotFoundException(
+                            "Profile not found with id : " + certificationsRequestDto.getProfileId()));
             certifications.setProfile(profile);
         }
+        //? relationship code certification and profile
 
         try {
             if (certificationsRequestDto.getCertificateImage() != null
@@ -130,6 +125,7 @@ public class CertificationServicesImpl implements CertificationServices {
                         && !certifications.getCertificateImagePublicId().isBlank()) {
                     cloudinaryService.deleteFile(certifications.getCertificateImagePublicId(), "image");
                 }
+
                 Map<String, Object> result = cloudinaryService
                         .uploadFile(certificationsRequestDto.getCertificateImage(), "image");
                 certifications.setCertificateImage((String) result.get("secure_url"));
@@ -139,47 +135,36 @@ public class CertificationServicesImpl implements CertificationServices {
             throw new FileUploadException("Failed to upload certificate Image", e);
         }
         Certifications saveCertifications = certificationsRepository.save(certifications);
-        // return modelMapper.map(saveCertifications, CertificationsResponseDto.class);
-        return mapToResponse(saveCertifications);
+        return modelMapper.map(saveCertifications, CertificationsResponseDto.class);
+        // return mapToResponse(saveCertifications);
     }
-    
-    
 
+    //* */ Delete Certification
     @Override
     public void deleteCertificationById(Long id) {
-       Certifications certifications = certificationsRepository.findById(id)
-               .orElseThrow(() -> new ResourceNotFoundException("Certifications id not found with id : " + id));
+        Certifications certifications = certificationsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Certifications id not found with id : " + id));
 
-        try{
-            if(certifications.getCertificateImagePublicId() != null && !certifications.getCertificateImagePublicId().isBlank()){
+        try {
+            if (certifications.getCertificateImagePublicId() != null
+                    && !certifications.getCertificateImagePublicId().isBlank()) {
                 cloudinaryService.deleteFile(certifications.getCertificateImagePublicId(), "image");
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new FileUploadException("Failed to delete certificate Image", e);
         }
         certificationsRepository.delete(certifications);
     }
 
-
-
-
-    private CertificationsResponseDto mapToResponse(
-            Certifications certifications) {
-
-        CertificationsResponseDto response = modelMapper.map(
-                certifications,
-                CertificationsResponseDto.class);
+    // ? relation ship code  certification and
+    private CertificationsResponseDto mapToResponse(Certifications certifications) {
+        CertificationsResponseDto response = modelMapper.map(certifications, CertificationsResponseDto.class);
 
         if (certifications.getProfile() != null) {
-
-            response.setProfileId(
-                    certifications.getProfile().getId());
-            response.setProfileName(
-                    certifications.getProfile().getFullName());
+            response.setProfileId(certifications.getProfile().getId());
+            response.setProfileName(certifications.getProfile().getFullName());
         }
-
         return response;
     }
 
-    
 }

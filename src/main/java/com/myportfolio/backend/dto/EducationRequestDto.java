@@ -57,4 +57,7 @@ public class EducationRequestDto {
     @URL(message = "Invalid institution URL")
     private String institutionUrl;
 
+    
+    private Long profileId;
+
 }

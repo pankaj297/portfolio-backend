@@ -34,4 +34,7 @@ public class AchievementsRequestDto {
     @PositiveOrZero(message = "Display order cannot be negative")
     private Integer displayOrder;
 
+    private Long profileId;
+    
+
 }
