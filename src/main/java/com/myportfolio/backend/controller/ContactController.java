@@ -28,7 +28,7 @@ public class ContactController {
     private final ContactServices contactServices;
 
      // ^ Get Profiles
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<ContactResponseDto>> getAllContact() {
         return ResponseEntity.status(HttpStatus.OK).body(contactServices.getAllContact());
     }
@@ -40,7 +40,7 @@ public class ContactController {
     }
 
         // ^ Create Profile
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<ContactResponseDto> createContact(@Valid @RequestBody ContactRequestDto contactRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(contactServices.createContact(contactRequestDto));
     }
