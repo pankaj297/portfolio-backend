@@ -1,6 +1,6 @@
 # Portfolio Backend API
 
-A RESTful backend API for a personal portfolio website built using **Java, Spring Boot, Spring Security, JWT, Spring Data JPA, PostgreSQL, and Cloudinary**.
+A RESTful backend API for a personal portfolio website built using **Java, Spring Boot, Spring Security, JWT, Spring Data JPA, PostgreSQL, Cloudinary, and Swagger/OpenAPI**.
 
 This backend provides APIs to manage portfolio content such as profile information, skills, projects, experience, education, certifications, achievements, services, resume, blog, and contact messages.
 
@@ -13,27 +13,27 @@ The application uses **JWT-based authentication and role-based authorization** t
 ```text
                          Portfolio Backend
                                 │
-          ┌─────────────────────┼─────────────────────┐
-          │                     │                     │
-          ▼                     ▼                     ▼
-      API Layer          Security Layer        Data Layer
-          │                     │                     │
-    Controllers          Spring Security        Repository
-          │                     │                     │
-        DTOs              JWT Authentication    JPA/Hibernate
-          │                     │                     │
-     Validation           Role-based Access     PostgreSQL
-          │                     │
-          └──────────────┬──────┘
-                         ▼
-                Business Layer
-                         │
-                      Service
-                         │
-                   ServiceImpl
-                         │
-                         ▼
-              Global Exception Handling
+            ┌───────────────────┼───────────────────┐
+            │                   │                   │
+            ▼                   ▼                   ▼
+        API Layer        Security Layer        Data Layer
+            │                   │                   │
+      Controllers        Spring Security       Repository
+            │                   │                   │
+          DTOs            JWT Authentication    JPA/Hibernate
+            │                   │                   │
+       Validation        Role-based Access     PostgreSQL
+            │
+            └──────────────────┬────────────────────┘
+                               ▼
+                        Business Layer
+                               │
+                            Service
+                               │
+                        ServiceImpl
+                               │
+                               ▼
+                    Global Exception Handling
 ```
 
 ---
@@ -140,7 +140,7 @@ Visitors should be able to send messages without logging in, but contact message
 | GET | `/api/contact/{id}` | 🔐 ADMIN |
 | DELETE | `/api/contact/{id}` | 🔐 ADMIN |
 
-Example:
+### Visitor
 
 ```text
 Visitor
@@ -155,7 +155,7 @@ Public API
 PostgreSQL
 ```
 
-Admin:
+### Admin
 
 ```text
 Admin
@@ -201,6 +201,7 @@ This prevents public users from reading private contact messages.
 - Project image upload
 - Certification image upload
 - Company/institution logo upload
+- Blog image upload
 - CRUD operations
 - Partial update support
 - Unique email validation
@@ -210,6 +211,10 @@ This prevents public users from reading private contact messages.
 - ModelMapper
 - CORS configuration
 - Environment variable support
+- Swagger/OpenAPI documentation
+- Interactive Swagger API testing
+- JWT testing through Swagger UI
+- Multipart file upload testing through Swagger UI
 - Postman API testing
 
 ---
@@ -226,12 +231,246 @@ This prevents public users from reading private contact messages.
 | **Hibernate** | ORM and JPA implementation |
 | **PostgreSQL** | Relational database |
 | **Cloudinary** | Image and file storage |
+| **Swagger/OpenAPI** | API documentation and testing |
 | **Maven** | Dependency management |
 | **Lombok** | Reduce boilerplate code |
 | **Bean Validation** | Request validation |
 | **ModelMapper** | DTO and Entity mapping |
 | **REST API** | Client-server communication |
 | **Postman** | API testing |
+
+---
+
+## 📚 Swagger / OpenAPI Documentation
+
+The project uses **Swagger UI with OpenAPI** for interactive API documentation and testing.
+
+Swagger provides a browser-based interface where APIs can be viewed and tested without manually creating requests.
+
+### Swagger UI
+
+After starting the Spring Boot application, open:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+### Swagger provides
+
+- View all REST API endpoints
+- View request and response schemas
+- Test APIs directly from the browser
+- Test JWT authentication
+- Authorize protected APIs using Bearer JWT tokens
+- Test CRUD operations
+- Test validation errors
+- Test exception responses
+- Test multipart file uploads
+- Test public APIs
+- Test ADMIN-protected APIs
+
+### Swagger Authentication Flow
+
+```text
+Swagger UI
+    │
+    ▼
+POST /api/auth/login
+    │
+    ▼
+Username + Password
+    │
+    ▼
+JWT Token
+    │
+    ▼
+Authorize 🔒
+    │
+    ▼
+Bearer JWT
+    │
+    ▼
+Protected ADMIN APIs
+```
+
+### Step 1 — Login
+
+Use:
+
+```http
+POST /api/auth/login
+```
+
+Request:
+
+```json
+{
+    "username": "admin",
+    "password": "your-password"
+}
+```
+
+Example response:
+
+```json
+{
+    "token": "eyJhbGciOiJIUzI1NiJ9...",
+    "tokenType": "Bearer",
+    "username": "admin",
+    "role": "ADMIN"
+}
+```
+
+### Step 2 — Copy JWT Token
+
+Copy the token from the login response.
+
+```text
+eyJhbGciOiJIUzI1NiJ9...
+```
+
+### Step 3 — Authorize Swagger
+
+Click the:
+
+```text
+Authorize 🔒
+```
+
+button in Swagger UI.
+
+Enter the JWT token according to the configured Bearer authentication scheme.
+
+```text
+Bearer <JWT_TOKEN>
+```
+
+Then click:
+
+```text
+Authorize
+```
+
+### Step 4 — Test Protected APIs
+
+After authorization, protected APIs can be executed directly from Swagger.
+
+Swagger sends:
+
+```http
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Example:
+
+```http
+GET /api/contact
+```
+
+Without JWT:
+
+```text
+401 Unauthorized / 403 Forbidden
+```
+
+With valid ADMIN JWT:
+
+```text
+200 OK
+```
+
+---
+
+## 📤 Multipart File Upload with Swagger
+
+The application supports file and image uploads using `MultipartFile`.
+
+APIs that support file uploads use:
+
+```text
+multipart/form-data
+```
+
+Swagger UI provides a **Choose File** option for multipart file fields.
+
+Example:
+
+```text
+title          [________________]
+
+slug           [________________]
+
+excerpt        [________________]
+
+content        [________________]
+
+imgThumbnail   [ Choose File ]
+
+category       [________________]
+
+published      [ true ]
+
+profileId      [ 1 ]
+```
+
+Supported file uploads include:
+
+- Profile images
+- Skill icons
+- Project images
+- Certification images
+- Company/institution logos
+- Resume PDF
+- Blog thumbnail/images
+- Other portfolio-related files
+
+### Create with Image
+
+```text
+POST /api/blog
+Content-Type: multipart/form-data
+```
+
+Swagger:
+
+```text
+Try it out
+    ↓
+Fill form fields
+    ↓
+Choose File
+    ↓
+Select image
+    ↓
+Execute
+```
+
+### Update with Image
+
+```text
+PUT /api/blog/{id}
+Content-Type: multipart/form-data
+```
+
+The image field can be optional during an update.
+
+If no new image is selected:
+
+```text
+Existing image remains unchanged
+```
+
+If a new image is selected:
+
+```text
+Old image
+    ↓
+Delete/replace old Cloudinary file
+    ↓
+Upload new image
+    ↓
+Save new image URL
+```
 
 ---
 
@@ -252,6 +491,7 @@ backend/
 │       │               │   ├── ModelMapperConfig.java
 │       │               │   ├── CorsConfig.java
 │       │               │   ├── SecurityConfig.java
+│       │               │   ├── SwaggerConfig.java
 │       │               │   └── AdminInitializer.java
 │       │               │
 │       │               ├── controller/
@@ -266,6 +506,7 @@ backend/
 │       │               │   ├── ResumeController.java
 │       │               │   ├── BlogController.java
 │       │               │   ├── ContactController.java
+│       │               │   ├── DashboardController.java
 │       │               │   └── AuthController.java
 │       │               │
 │       │               ├── dto/
@@ -465,6 +706,15 @@ Loads the admin user from PostgreSQL and provides user details to Spring Securit
 
 Creates the initial ADMIN user when the application starts if the admin user does not already exist.
 
+### `SwaggerConfig.java`
+
+Configures:
+
+- OpenAPI documentation
+- Swagger UI
+- JWT Bearer authentication scheme
+- API security documentation
+
 ---
 
 ## 🗄️ Database & JPA
@@ -514,6 +764,7 @@ Cloudinary is used for storing and managing uploaded media files.
 - Company/institution logos
 - Certification images
 - Resume PDF
+- Blog images
 - Other portfolio-related files
 
 The application stores:
@@ -631,23 +882,45 @@ API Response
 
 ## 🧪 API Testing
 
-The APIs are tested using **Postman**.
+The APIs are tested using **Swagger/OpenAPI and Postman**.
+
+### Swagger/OpenAPI Testing
 
 Testing includes:
 
+- View API documentation
 - Login
 - JWT authentication
+- Swagger authorization
 - Public GET requests
 - Protected POST requests
 - Protected PUT requests
 - Protected PATCH requests
 - Protected DELETE requests
-- Contact form submission
-- Admin contact retrieval
-- Admin contact deletion
 - Multipart file uploads
 - Validation errors
 - Exception handling
+- CRUD operations
+- Invalid JWT testing
+- Expired JWT testing
+
+Swagger UI:
+
+```text
+http://localhost:8080/swagger-ui/index.html
+```
+
+### Postman Testing
+
+Postman is also used for:
+
+- Login
+- JWT authentication
+- Public APIs
+- Protected APIs
+- Multipart file uploads
+- Validation testing
+- Exception testing
 - CRUD operations
 - Invalid JWT testing
 - Expired JWT testing
@@ -826,7 +1099,7 @@ PostgreSQL
 
 **Config**
 
-- Contains application configuration such as Security, Cloudinary, CORS, and ModelMapper
+- Contains application configuration such as Security, Cloudinary, CORS, ModelMapper, and Swagger/OpenAPI
 
 ---
 
@@ -846,6 +1119,8 @@ The main goals of this project are:
 - Apply DTOs and validation
 - Implement centralized exception handling
 - Follow clean and maintainable backend architecture
+- Create interactive API documentation using Swagger/OpenAPI
+- Test secured APIs using JWT through Swagger
 - Create a backend that can be integrated with a React frontend
 - Provide public portfolio APIs and a secure admin management system
 
@@ -869,6 +1144,7 @@ Hibernate
 PostgreSQL
 REST API
 Cloudinary
+Swagger/OpenAPI
 React
 JavaScript
 ```
