@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import com.myportfolio.backend.dto.MyProfileResponseDto;
 
 import com.myportfolio.backend.services.MyProfileServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/profile")
+@Tag(name = "Profile APIs", description = "Profile - Create , Update, Partial Update, Get and Delete ")
 public class MyProfile {
 
     private final MyProfileServices myProfileServices;
@@ -47,13 +50,13 @@ public class MyProfile {
     }
 
     // ^ Create Profile
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MyProfileResponseDto> createMyProfile(@Valid @ModelAttribute  MyProfileRequestDto myProfileRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(myProfileServices.createMyProfile(myProfileRequestDto));
     }
 
     // ^ Update Profile
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MyProfileResponseDto> updateMyProfile(@PathVariable Long id, @Valid
             @ModelAttribute  MyProfileRequestDto myProfileRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(myProfileServices.updateMyProfile(id,

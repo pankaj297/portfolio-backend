@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +23,14 @@ import com.myportfolio.backend.dto.MySkillsResponseDto;
 import com.myportfolio.backend.model.MySkills;
 import com.myportfolio.backend.services.MySkillServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/skills")   
+@RequestMapping("/api/skills")
+@Tag(name = "Skills APIs", description = "Skills - Create , Update, Partial Update, Get and Delete ") 
 public class MySkillsController {
     
     private final MySkillServices mySkillServices;
@@ -42,13 +45,13 @@ public class MySkillsController {
         return ResponseEntity.status(HttpStatus.OK).body(mySkillServices.getMySkillById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MySkillsResponseDto> createMySkills(@Valid @ModelAttribute  MySkillRequestDto mySkillRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(mySkillServices.createMySkills(mySkillRequestDto));
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<MySkillsResponseDto> updateMySkills(@PathVariable Long id,
            @Valid  @ModelAttribute  MySkillRequestDto mySkillRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(mySkillServices.updateMySkills(id, mySkillRequestDto));

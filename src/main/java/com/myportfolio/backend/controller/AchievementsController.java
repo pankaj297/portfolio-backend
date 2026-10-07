@@ -3,6 +3,7 @@ package com.myportfolio.backend.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,14 @@ import com.myportfolio.backend.dto.AchievementsRequestDto;
 import com.myportfolio.backend.dto.AchievementsResponseDto;
 import com.myportfolio.backend.services.AchievementsServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/achievements")
+@Tag(name = "Achievements APIs", description = "Achievements - Create , Update, Partial Update, Get and Delete ")
 public class AchievementsController {
 
     private final AchievementsServices achievementsServices;
@@ -37,14 +40,14 @@ public class AchievementsController {
         return ResponseEntity.status(HttpStatus.OK).body(achievementsServices.getAchievementsById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AchievementsResponseDto> createAchievements(
             @Valid @ModelAttribute  AchievementsRequestDto achievementsRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(achievementsServices.createAchievements(
                 achievementsRequestDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AchievementsResponseDto> updateAchievement(@PathVariable Long id,
             @Valid @ModelAttribute AchievementsRequestDto achievementsRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(achievementsServices.updateAchievements(id,

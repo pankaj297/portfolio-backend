@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +21,14 @@ import com.myportfolio.backend.dto.ExperienceRequestDto;
 import com.myportfolio.backend.dto.ExperienceResponseDto;
 import com.myportfolio.backend.services.ExperienceServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/experience")
+@Tag(name = "Experience APIs", description = "Experience - Create , Update, Partial Update, Get and Delete ")
 public class ExperienceController {
     
     public final ExperienceServices experienceServices;
@@ -43,7 +46,7 @@ public class ExperienceController {
     }
 
     //^ Create Experience
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ExperienceResponseDto> createExperience(
           @Valid  @ModelAttribute  ExperienceRequestDto experienceRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
@@ -51,7 +54,7 @@ public class ExperienceController {
     }
 
     //^ Update Experience
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ExperienceResponseDto> updateExperience(@PathVariable Long id,
           @Valid  @ModelAttribute ExperienceRequestDto experienceRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)

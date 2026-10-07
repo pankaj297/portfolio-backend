@@ -3,6 +3,7 @@ package com.myportfolio.backend.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,14 @@ import com.myportfolio.backend.dto.EducationRequestDto;
 import com.myportfolio.backend.dto.EducationResponseDto;
 import com.myportfolio.backend.services.EducationServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/education")  
+@RequestMapping("api/education")
+@Tag(name = "Education APIs", description = "Education - Create , Update, Partial Update, Get and Delete ")
 public class EducationController {
     
     private final EducationServices educationServices;
@@ -37,12 +40,12 @@ public class EducationController {
         return ResponseEntity.status(HttpStatus.OK).body(educationServices.getEducationById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EducationResponseDto> createEducation(@Valid  @ModelAttribute EducationRequestDto educationRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(educationServices.createEducation(educationRequestDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<EducationResponseDto> updateEducation(@PathVariable Long id,
         @Valid  @ModelAttribute EducationRequestDto educationRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(educationServices.getEducation(id, educationRequestDto));

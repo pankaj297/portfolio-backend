@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +21,14 @@ import com.myportfolio.backend.dto.ProjectsRequestDto;
 import com.myportfolio.backend.dto.ProjectsResponseDto;
 import com.myportfolio.backend.services.ProjectsServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor 
 @RequestMapping("/api/projects")
+@Tag(name = "Projects APIs", description = "Projects - Create , Update, Partial Update, Get and Delete ") 
 public class ProjectsController {
     
     public final ProjectsServices projectsServices;
@@ -43,14 +46,14 @@ public class ProjectsController {
     }
 
     //^ Create Projects
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProjectsResponseDto> createProjects(@Valid @ModelAttribute  ProjectsRequestDto projectsRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(projectsServices.createProjects(projectsRequestDto));
 
     }
 
     //^ Update Projects
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProjectsResponseDto> updateProjects(@PathVariable Long id,
          @Valid  @ModelAttribute  ProjectsRequestDto projectsRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(projectsServices.updateProjects(id, projectsRequestDto));

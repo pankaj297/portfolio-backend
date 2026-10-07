@@ -3,6 +3,7 @@ package com.myportfolio.backend.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,14 @@ import com.myportfolio.backend.dto.CertificationsRequestDto;
 import com.myportfolio.backend.dto.CertificationsResponseDto;
 import com.myportfolio.backend.services.CertificationServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/certification") 
+@RequestMapping("/api/certification")
+@Tag(name = "Certification APIs", description = "Certification - Create , Update, Partial Update, Get and Delete ")
 public class CertificationsController {
     
     private final CertificationServices certificationServices;
@@ -37,13 +40,13 @@ public class CertificationsController {
         return ResponseEntity.status(HttpStatus.OK).body(certificationServices.getCertificationById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CertificationsResponseDto> createCertification(@Valid  @ModelAttribute  CertificationsRequestDto certificationsRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(certificationServices.createCertification(
                 certificationsRequestDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CertificationsResponseDto> updateCertification(@PathVariable Long id,
         @Valid  @ModelAttribute CertificationsRequestDto certificationsRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(certificationServices.updateCertification(id, 

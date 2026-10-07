@@ -17,12 +17,14 @@ import com.myportfolio.backend.dto.ContactRequestDto;
 import com.myportfolio.backend.dto.ContactResponseDto;
 import com.myportfolio.backend.services.ContactServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/contact")
+@Tag(name = "Contact APIs", description = "Contact - Create , Update, Partial Update, Get and Delete ")
 public class ContactController {
     
     private final ContactServices contactServices;

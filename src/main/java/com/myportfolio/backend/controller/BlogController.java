@@ -3,6 +3,7 @@ package com.myportfolio.backend.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,12 +18,14 @@ import com.myportfolio.backend.dto.BlogRequestDto;
 import com.myportfolio.backend.dto.BlogResponseDto;
 import com.myportfolio.backend.services.BlogServices;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/blog")
+@Tag(name = "Blog APIs", description = "Blog - Create , Update, Partial Update, Get and Delete ")
 public class BlogController {
 
     private final BlogServices blogServices;
@@ -41,7 +44,7 @@ public class BlogController {
                 .body(blogServices.getBlogById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BlogResponseDto> createBlog(
             @Valid @ModelAttribute  BlogRequestDto blogRequestDto) {
 
@@ -49,7 +52,7 @@ public class BlogController {
                 .body(blogServices.createBlog(blogRequestDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BlogResponseDto> updateBlog(
             @PathVariable Long id,
             @Valid @ModelAttribute  BlogRequestDto blogRequestDto) {
