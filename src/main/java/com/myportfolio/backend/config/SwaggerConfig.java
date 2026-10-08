@@ -32,12 +32,12 @@ public class SwaggerConfig {
                                 .servers(
                                                 List.of(
                                                                 new Server()
-                                                                                .url("http://localhost:8080")
-                                                                                .description("Local"),
+                                                                                .url("https://portfolio-backend-lqtw.onrender.com")
+                                                                                .description("Live"),
 
                                                                 new Server()
-                                                                                .url("https://portfolio-backend-lqtw.onrender.com")
-                                                                                .description("Production")))
+                                                                                .url("http://localhost:8080")
+                                                                                .description("Local")))
                                 .tags(
                                                 List.of(
                                                                 new Tag().name("Auth APIs"),
