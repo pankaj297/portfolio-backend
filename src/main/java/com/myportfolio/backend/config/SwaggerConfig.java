@@ -16,39 +16,32 @@ import io.swagger.v3.oas.models.tags.Tag;
 
 @Configuration
 @OpenAPIDefinition(info = @Info(title = "Portfolio Management API", version = "1.0", description = "REST APIs for Portfolio Management System"), security = {
-        @SecurityRequirement(name = "bearerAuth")
+                @SecurityRequirement(name = "bearerAuth")
 })
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 public class SwaggerConfig {
 
-    @Bean
-    public OpenAPI myCustomConfig() {
+        @Bean
+        public OpenAPI myCustomConfig() {
 
-        return new OpenAPI()
-                .info(
-                        new io.swagger.v3.oas.models.info.Info()
-                                .title("Portfolio App API Testing")
-                                .description("By Pankaj"))
-                .servers(
-                        List.of(
-                                new Server()
-                                        .url("http://localhost:8080")
-                                        .description("Local"),
+                return new OpenAPI()
+                                .info(
+                                                new io.swagger.v3.oas.models.info.Info()
+                                                                .title("Portfolio App API Testing")
+                                                                .description("By Pankaj"))
+                                .servers(
+                                                List.of(
+                                                                new Server()
+                                                                                .url("http://localhost:8080")
+                                                                                .description("Local"),
 
-                                new Server()
-                                        .url("http://localhost:8081")
-                                        .description("Live")))
-                    .tags(List.of(new Tag().name("Auth APIs"),
-                            new Tag().name("Profile APIs"),
-                             new Tag().name("Education APIs")       
-                        ));
-    }
+                                                                new Server()
+                                                                                .url("https://portfolio-backend-lqtw.onrender.com")
+                                                                                .description("Production")))
+                                .tags(
+                                                List.of(
+                                                                new Tag().name("Auth APIs"),
+                                                                new Tag().name("Profile APIs"),
+                                                                new Tag().name("Education APIs")));
+        }
 }
-
-
-
-
-// @OpenAPIDefinition(info = @Info(title = "Portfolio Management API", version = "1.0", description = "REST APIs for Portfolio Management System"), security = {
-//         @SecurityRequirement(name = "bearerAuth")
-// })
-// @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
